@@ -42,7 +42,7 @@ double	get_time_in_ms(void)
 	struct timeval	tv;
 
 	gettimeofday(&tv, NULL);
-	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+	return ((double)tv.tv_sec * 1000.0 + (double)tv.tv_usec / 1000.0);
 }
 
 int	wait_thread(t_data *data)
@@ -50,9 +50,11 @@ int	wait_thread(t_data *data)
 	int	i;
 
 	i = 0;
+	if (data->nb_philo == 1)
+		return (0);
 	while (i < data->nb_philo)
 	{
-		if(pthread_join(data->philos[i].thread, NULL) != 0)
+		if (pthread_join(data->philos[i].thread, NULL) != 0)
 		{
 			printf("❌ Error: pthread_join failed for %d\n", i);
 			return (1);
@@ -73,6 +75,9 @@ void	cleanup(t_data *data)
 		i++;
 	}
 	free(data->forks);
-	free(data->philos);
+	pthread_mutex_destroy(data->end_m);
+	pthread_mutex_destroy(data->write_m);
 	free(data->end_m);
+	free(data->write_m);
+	free(data->philos);
 }
