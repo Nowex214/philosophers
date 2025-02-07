@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ehenry <ehenry@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/01 12:19:08 by ehenry            #+#    #+#             */
-/*   Updated: 2025/02/01 12:19:08 by ehenry           ###   ########.fr       */
+/*   Created: 2025/02/07 09:51:18 by ehenry            #+#    #+#             */
+/*   Updated: 2025/02/07 09:51:18 by ehenry           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,8 @@ int	parse_arg(int ac, char **av, t_data *data)
 {
 	if (ac < 5)
 	{
-		printf("🤓☝️ Maybe try: ./philo <nb_philo> <time_to_die> <time_to_eat> <time_to_sleep> [nb_eat]\n");
+		printf("🤓☝️ Maybe try: ./philo <nb_philo> <time_to_die> <time_to_eat>"
+			"<time_to_sleep> [nb_eat]\n");
 		return (1);
 	}
 	data->nb_philo = ft_atoi(av[1]);
@@ -38,32 +39,40 @@ int	parse_arg(int ac, char **av, t_data *data)
 	return (0);
 }
 
+static int	check_philo(t_data *data)
+{
+	int		i;
+	double	now;
+
+	i = 0;
+	while (i < data->nb_philo)
+	{
+		now = get_time_in_ms();
+		pthread_mutex_lock(data->end_m);
+		if ((unsigned int)now > data->philos[i].time_die && data->end == 0)
+		{
+			printf("🪦 Philosopher %d is dead !\n", data->philos[i].id);
+			data->end = 1;
+			pthread_mutex_unlock(data->end_m);
+			return (1);
+		}
+		pthread_mutex_unlock(data->end_m);
+		i++;
+	}
+	return (0);
+}
+
 void	*monitor_thread(void *arg)
 {
 	t_data	*data;
-	int		i;
-	double	now;
 
 	data = (t_data *)arg;
 	if (!data->philos)
 		return (NULL);
 	while (1)
 	{
-		i = 0;
-		while (i < data->nb_philo)
-		{
-			now = get_time_in_ms();
-			pthread_mutex_lock(data->end_m);
-			if ((unsigned int)now > data->philos[i].time_die && data->end == 0)
-			{
-				printf("🪦 Philosopher %d is dead !\n", data->philos[i].id);
-				data->end = 1;
-				pthread_mutex_unlock(data->end_m);
-				return (NULL);
-			}
-			pthread_mutex_unlock(data->end_m);
-			i++;
-		}
+		if (check_philo(data))
+			return (NULL);
 		usleep(1000);
 		pthread_mutex_lock(data->end_m);
 		if (data->end == 1)

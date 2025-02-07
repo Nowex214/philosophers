@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: ehenry <ehenry@student.42luxembourg.lu>    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/02/01 11:52:03 by ehenry            #+#    #+#             */
-/*   Updated: 2025/02/01 11:52:03 by ehenry           ###   ########.fr       */
+/*   Created: 2025/02/07 09:50:56 by ehenry            #+#    #+#             */
+/*   Updated: 2025/02/07 09:50:56 by ehenry           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int	init_philo(t_data *data)
 		return (1);
 	while (i < data->nb_philo)
 	{
-		data->philos[i].id = i;
+		data->philos[i].id = i + 1;
 		data->philos[i].count_eat = 0;
 		data->philos[i].eating = 0;
 		data->philos[i].status = 0;
@@ -72,27 +72,36 @@ int	init_mutex(t_data *data)
 	return (0);
 }
 
-int	init_thread(t_data *data)
+static int	create_philo(t_data *data)
 {
-	int			i;
-	pthread_t	monitor;
+	int	i;
 
 	i = 0;
-	if (data->nb_philo == 1)
-	{
-		routine_one(&data->philos[0]);
-		return(0);
-	}
 	while (i < data->nb_philo)
 	{
-		if (pthread_create(&data->philos[i].thread, NULL,
-				&routine, &data->philos[i]) != 0)
+		if (pthread_create(&data->philos[i].thread, NULL, &routine,
+				&data->philos[i]) != 0)
 		{
-			printf("❌ Error: Impossible to create thread of Philosopher %d ☠️\n", i);
+			printf("❌ Error: Impossible to create thread of "
+				"Philosopher %d ☠️\n", i);
 			return (1);
 		}
 		i++;
 	}
+	return (0);
+}
+
+int	init_thread(t_data *data)
+{
+	pthread_t	monitor;
+
+	if (data->nb_philo == 1)
+	{
+		routine_one(&data->philos[0]);
+		return (0);
+	}
+	if (create_philo(data) != 0)
+		return (1);
 	if (pthread_create(&monitor, NULL, &monitor_thread, data) != 0)
 	{
 		printf("❌ Error: Impossible to create monitor thread..\n");

@@ -41,6 +41,7 @@ typedef struct s_data
 	int				nb_eat;
 	int				end;
 	int				dead;
+	int				finish_count;
 	unsigned int	start_time;
 	int				sleep_time;
 	int				eat_time;
@@ -60,6 +61,10 @@ int		init_philo(t_data *data);
 int		init_thread(t_data *data);
 
 // Routine / Monitor
+void	think(t_philo *philo, t_data *data);
+void	take_forks(t_philo *philo);
+void	eat(t_philo *philo, t_data *data);
+void	sleep_philo(t_philo *philo, t_data *data);
 void	*routine(void *arg);
 void	*monitor_thread(void *arg);
 void	*routine_one(void *arg);

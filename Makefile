@@ -9,7 +9,7 @@ SRCS = init.c\
 		parsing.c\
 		routine.c\
 		utils.c\
-		routine_one.c\
+		routine2.c\
 		main.c
 
 OBJS = $(SRCS:.c=.o)
