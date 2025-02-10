@@ -41,7 +41,7 @@ typedef struct s_data
 	int				nb_eat;
 	int				end;
 	int				dead;
-	int				finish_count;
+	int				finish_eating;
 	unsigned int	start_time;
 	int				sleep_time;
 	int				eat_time;

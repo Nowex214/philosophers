@@ -59,7 +59,7 @@ clean:
 
 fclean: clean
 	@$(RM) $(NAME)
-	@$(ECHO) "$(BLUE)Full clean completed!$(DEF_COLOR)"
+	@$(ECHO) "$(BLUE)𝖎𝖙'𝖘 𝖙𝖔𝖔 𝖈𝖑𝖊𝖆𝖓!$(DEF_COLOR)"
 
 re: fclean all
 
